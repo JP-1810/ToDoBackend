@@ -11,7 +11,9 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "*",
+   origin: "https://todofrontend-ps09.onrender.com", 
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -77,7 +79,7 @@ app.post("/tasks", authMiddleware, async (req, res) => {
   res.json(task);
 });
 
-app.delete("/task/:id", authMiddleware, async (req, res) => {
+app.delete("/tasks/:id", authMiddleware, async (req, res) => {
   await Task.findOneAndDelete({ _id: req.params.id, userId: req.userId });
   res.json({ message: "Task deleted" });
 });
@@ -93,7 +95,7 @@ app.patch("/tasks/:id/status", authMiddleware, async (req, res) => {
   res.json(task);
 });
 
-app.patch("/task/:id/priority", authMiddleware, async (req, res) => {
+app.patch("/tasks/:id/priority", authMiddleware, async (req, res) => {
   const { priority } = req.body;
   const task = await Task.findOneAndUpdate(
     { _id: req.params.id, userId: req.userId },
