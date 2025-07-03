@@ -36,7 +36,7 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model("Task", taskSchema);
 
-app.post("/register", async (req, res) => {
+app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
   const user = new User({ username, password: hashed });
