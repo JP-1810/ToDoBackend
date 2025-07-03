@@ -11,9 +11,7 @@ app.use(express.json());
 
 app.use(
   cors({
-   origin: "https://todofrontend-ps09.onrender.com", 
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: "*",
   })
 );
 
@@ -26,7 +24,6 @@ const userSchema = new mongoose.Schema({
   username: String,
   password: String,
 });
-
 const User = mongoose.model("User", userSchema);
 
 const taskSchema = new mongoose.Schema({
@@ -35,15 +32,14 @@ const taskSchema = new mongoose.Schema({
   priority: String,
   userId: mongoose.Schema.Types.ObjectId,
 });
-
 const Task = mongoose.model("Task", taskSchema);
 
-app.post("/signup", async (req, res) => {
+app.post("/register", async (req, res) => {
   const { username, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
   const user = new User({ username, password: hashed });
   await user.save();
-  res.json({ message: "User has been registered" });
+  res.json({ message: "User registered" });
 });
 
 app.post("/login", async (req, res) => {
@@ -64,7 +60,7 @@ const authMiddleware = (req, res, next) => {
     req.userId = decoded.userId;
     next();
   } catch (e) {
-    res.status(401).json({ message: "Invalid Token" });
+    res.status(401).json({ message: "Invalid token" });
   }
 };
 
@@ -84,6 +80,7 @@ app.delete("/tasks/:id", authMiddleware, async (req, res) => {
   res.json({ message: "Task deleted" });
 });
 
+// Update task status
 app.patch("/tasks/:id/status", authMiddleware, async (req, res) => {
   const { status } = req.body;
   const task = await Task.findOneAndUpdate(
@@ -95,6 +92,7 @@ app.patch("/tasks/:id/status", authMiddleware, async (req, res) => {
   res.json(task);
 });
 
+// Update task priority
 app.patch("/tasks/:id/priority", authMiddleware, async (req, res) => {
   const { priority } = req.body;
   const task = await Task.findOneAndUpdate(
@@ -106,4 +104,4 @@ app.patch("/tasks/:id/priority", authMiddleware, async (req, res) => {
   res.json(task);
 });
 
-app.listen(PORT, () => console.log("Server is running on port 8080"));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
